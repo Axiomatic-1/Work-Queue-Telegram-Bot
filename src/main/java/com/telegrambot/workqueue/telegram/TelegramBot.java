@@ -10,18 +10,15 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class TelegramBot extends TelegramLongPollingBot {
     public static final String ADD_TASK = "/add";
-    public static final String SHOW = "/show";
-    public static final String TASK_IS_ADDED_IN_QUEUE = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n Таска добавлена в очередь \n";
-    public static final String END_TITLE = "\"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n";
-    private static final String MK_PC = "https://tenor.com/ru/view/monkey-stress-mad-gif-15327798";
+    public static final String CLEAR = "/clear";
+    public static final String REPORT = "/report";
+    public static final String MULTIPLE_ADD = "/multitask";
+
     private final BotConfig botConfig;
     private final TrackerQueueService trackerService;
 
@@ -32,38 +29,32 @@ public class TelegramBot extends TelegramLongPollingBot {
             // Set variables
             String msgTxt = update.getMessage().getText();
             String command = prepareCommand(msgTxt);
-            String task = prepareTask(msgTxt);
             String name = update.getMessage().getFrom().getFirstName();
             long chatId = update.getMessage().getChatId();
 
             switch (command) {
                 case ADD_TASK -> {
-                    Map<Integer, String> taskMap = trackerService.addTask(task, name, chatId);
-                    StringBuilder taskList = new StringBuilder();
-                    AtomicInteger count = new AtomicInteger(1);
-                    String ans = buildTaskList(taskMap, taskList, count, MK_PC);
+                    String task = prepareTask(msgTxt);
+                    if(task.isEmpty()) {
+                        return;
+                    }
+                    String ans = trackerService.addTask(task, name, chatId);
                     sendMessage(chatId, ans);
                 }
-                case SHOW -> {
-                    log.info("");
+                case MULTIPLE_ADD -> {
+                    String[] tasks = msgTxt.substring(9).split("~");
+                    String ans = "";
+                    for (String task : tasks) {
+                        ans = trackerService.addTask(task, name, chatId);
+                    }
+                    sendMessage(chatId, ans);
                 }
+                case CLEAR -> sendMessage(chatId,trackerService.clearTasks(chatId));
+                case REPORT -> sendMessage(chatId, trackerService.getReport(chatId));
             }
         }
     }
 
-    private static String buildTaskList(
-            Map<Integer, String> taskMap,
-            StringBuilder taskList,
-            AtomicInteger count,
-            String gif) {
-        taskMap.values().forEach(taskDescription ->
-                taskList.append(count.getAndIncrement())
-                        .append(". ")
-                        .append(taskDescription)
-                        .append("\n")
-        );
-        return TASK_IS_ADDED_IN_QUEUE + taskList + END_TITLE + gif;
-    }
 
     private String prepareTask(String msgTxt) {
         return msgTxt.substring(4);
