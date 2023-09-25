@@ -17,20 +17,23 @@ public class TrackerQueueService {
 
     private static final String CLEAR_SUCCESS = "Таски были удалены из очереди. До завтра!";
     public static final String NOTHING_TO_REPORT = "Мне не о чем докладывать. Вы бездельник.";
-    public static final String GREETING_HELP = "Привет! Я личный помощник. \n"
-        + "  Я умею: \n "
-        + "    добавлять задания в очередь: \n"
-        + "      /add написать уточнения по сервису \n"
-        + "     добавлять несколько заданий:\n"
-        + "       /multitask задание~задание2~задание3\n"
-        + "     формировать отчет:\n"
-        + "       /report\n"
-        + "     Очищать список заданий:\n"
-        + "       /clear\n"
-        + "";
+    public static final String GREETING_HELP = """
+          Привет! Я личный помощник. 
+          Я умею:
+            добавлять задания в очередь: 
+              /add написать уточнения по сервису 
+             добавлять несколько заданий:
+               /multitask задание~задание2~задание3
+             формировать отчет:
+               /report
+             Очищать список заданий:
+               /clear
+               """;
     private final Map<Long, Map<Integer, String>> channels = new ConcurrentHashMap<>();
-    public static final String TASK_IS_ADDED_IN_QUEUE = "Таска добавлена в очередь \n " +
-            "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n";
+    public static final String TASK_IS_ADDED_IN_QUEUE = """
+            Таска добавлена в очередь 
+            - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+            """;
     public static final String END_TITLE = "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n";
     private static final String GIF_TOPH_REPORT = "https://tenor.com/ru/view/toph-smug-avatar-the-last-airbender-yeah-at-la-gif-11607641";
     private static final String GIF_FOR_REPORT = "https://media.giphy.com/media/3ornjZLITGcFQVRbxK/giphy.gif";
