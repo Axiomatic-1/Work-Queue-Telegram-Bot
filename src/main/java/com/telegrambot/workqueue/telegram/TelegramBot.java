@@ -18,6 +18,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     public static final String CLEAR = "/clear";
     public static final String REPORT = "/report";
     public static final String MULTIPLE_ADD = "/multitask";
+    public static final String HELP = "/help";
 
     private final BotConfig botConfig;
     private final TrackerQueueService trackerService;
@@ -51,6 +52,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 }
                 case CLEAR -> sendMessage(chatId,trackerService.clearTasks(chatId));
                 case REPORT -> sendMessage(chatId, trackerService.getReport(chatId));
+                case HELP -> sendMessage(chatId, trackerService.sendHelp());
             }
         }
     }
